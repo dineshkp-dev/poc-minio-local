@@ -71,7 +71,7 @@ public class MinioController {
                             .object(uploadFilename)
                             .filename(localFileName)
                             .build());
-            log.info("'{}' is successfully uploaded as object '{}' to bucket '{}'.", localFileName, bucketName, uploadFilename);
+            log.info("'{}' is successfully uploaded as object '{}' to bucket '{}'.", localFileName, uploadFilename, bucketName);
         } catch (MinioException e) {
             log.error("Error occurred: ", e);
             log.error("HTTP trace: {}", e.httpTrace());
