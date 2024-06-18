@@ -65,22 +65,20 @@ public class MinioController {
         boolean success = false;
         try {
             minioClient =
-                    MinioClient.builder()
-                            .endpoint(storageUrl)
-                            .credentials(accessKey, secretKey)
-                            .build();
+                    buildMinioClient();
 
-            boolean found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(uploadBucketName).build());
-            if (!found) {
+            boolean bucketExists = minioClient.bucketExists(BucketExistsArgs.builder().bucket(uploadBucketName).build());
+            if (!bucketExists) {
+                log.info("Creating bucket {}", uploadBucketName);
                 minioClient.makeBucket(MakeBucketArgs.builder().bucket(uploadBucketName).build());
+                log.info("Bucket creation successful: {}", uploadBucketName);
             } else {
                 log.warn("Bucket {} already exists.", uploadBucketName);
             }
             log.info("Uploading file: {} to bucket: {}", uploadFilename, uploadBucketName);
             String localFile = localFilePath + localFilename;
             checkIfFileExistInLocal(localFile);
-            Map<String, String> updateMetDataProperty = new HashMap<>(metaDataProperty);
-            updateMetDataProperty.put("original_filename", localFilename);
+            Map<String, String> updateMetDataProperty = updateMetaDataProperties(localFilename);
 
             minioClient.uploadObject(
                     UploadObjectArgs.builder()
@@ -103,6 +101,19 @@ public class MinioController {
             }
         }
         return success;
+    }
+
+    private MinioClient buildMinioClient() {
+        return MinioClient.builder()
+                .endpoint(storageUrl)
+                .credentials(accessKey, secretKey)
+                .build();
+    }
+
+    private Map<String, String> updateMetaDataProperties(String localFilename) {
+        Map<String, String> updateMetDataProperty = new HashMap<>(metaDataProperty);
+        updateMetDataProperty.put("original_filename", localFilename);
+        return updateMetDataProperty;
     }
 
     private static void checkIfFileExistInLocal(String localFile) throws FileNotFoundException {
