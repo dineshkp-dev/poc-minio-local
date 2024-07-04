@@ -1,0 +1,9 @@
+s3proxy.endpoint=http://0.0.0.0:8080
+s3proxy.authorization=none
+s3proxy.identity=local-identity
+s3proxy.credential=local-credential
+jclouds.azureblob.auth=azureKey
+jclouds.provider=azureblob
+jclouds.identity=xxx
+jclouds.credential=
+jclouds.endpoint=https://xxxx.blob.core.windows.net/
